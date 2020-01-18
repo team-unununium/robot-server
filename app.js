@@ -42,7 +42,7 @@ socketauth(io, {
 io.on('connection', (socket) => {
     const receiveDataCallback = (e, data) => {
         if (!e) {
-            socket.broadcast.emit('dataReceived', data)
+            socket.broadcast.emit('clientDataReceived', data)
         }
     }
 
@@ -66,25 +66,14 @@ io.on('connection', (socket) => {
                     })
                 }
             })
-
-            // Get initial data if the client is a robot
-            socket.emit('requestData', null, receiveDataCallback)
         }
+        // Get initial data
+        io.emit('robotRequestData', null, receiveDataCallback)
     })
 
     // Only called from client side
-    socket.on('getBot', (data, callback) => {
-        const clientList = io.sockets.clients()
-        io.sockets.clients((error, clients) => {
-            if (!error) {
-                clients.forEach((client) => {
-                    if (client['socketType'] === 'robot') {
-                        return callback(true)
-                    }
-                })
-            }
-        })
-        callback(false)
+    socket.on('clientRequestData', (data, callback) => {
+        socket.broadcast.emit('requestData', null, receiveDataCallback)
     })
 
     // Only called from client side
