@@ -99,8 +99,8 @@ io.on('connection', (socket) => {
 
 // Get token using GUID and common secret
 app.post('/access', async (req, res) => {
-    if (!req.body.guid || !req.body.secret || req.body.secret !== process.env.SERVER_CLIENT_SECRET) {
-        console.log("TEMP134: " + req)
+    if (!req.guid || !req.secret || req.secret !== process.env.SERVER_CLIENT_SECRET) {
+        console.log("TEMP134: " + require('util').inspect(req, false, null, true))
         return res.status(400).send()
     }
 
