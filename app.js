@@ -101,7 +101,8 @@ io.on('connection', (socket) => {
 // Get token using GUID and common secret
 app.post('/access', async (req, res) => {
     if (!req.guid || !req.secret || req.secret !== process.env.SERVER_CLIENT_SECRET) {
-        return res.status(400).send(req)
+        console.log(req)
+        return res.status(400).send()
     }
 
     // Overwrite existing client data
