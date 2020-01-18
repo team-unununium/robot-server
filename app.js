@@ -93,23 +93,36 @@ io.on('connection', (socket) => {
     })
 
     // Only called from robot side
-    socket.on('updateData', (data, callback) => {
-        socket.broadcast.emit('dataReceived', data)
+    socket.on('robotVerifyClient', ({ guid, token }, callback) => {
+        const client = AppClient.findOne({ guid, token })
+        socket.emit('robotClientVerified', client)
+    })
+
+    // Only called from robot side
+    socket.on('robotUpdateData', (data, callback) => {
+        socket.broadcast.emit('clientDataReceived', data)
+    })
+
+    // Only called from robot side
+    socket.on('robotStreamUrl', (url, callback) => {
+        socket.broadcast.emit('clientStreamUrl', url)
     })
 })
 
 // Get token using GUID and common secret
 app.post('/access', async (req, res) => {
-    console.log(req.body)
     if (!req.body || !req.body.guid || !req.body.secret || req.body.secret !== process.env.SERVER_CLIENT_SECRET) {
         return res.status(400).send()
     }
 
     // Overwrite existing client data
-    const client = new AppClient({ guid: req.body.guid, token: jwt.sign({ _id: req.body.guid }, process.env.JWT_SECRET)})
-    await client.save()
-
-    res.status(201).send(client)
+    try {
+        const client = new AppClient({ guid: req.body.guid, token: jwt.sign({ _id: req.body.guid }, process.env.JWT_SECRET)})
+        await client.save()
+        res.status(201).send(client)
+    } catch (e) {
+        res.status(500).send()
+    }
 })
 
 // Connection Test
