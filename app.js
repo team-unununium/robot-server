@@ -48,6 +48,7 @@ io.on('connection', (socket) => {
 
     // Called from client and robot side
     socket.on('join', (type, callback) => {
+        console.log(type)
         if (type !== 'robot' && type !== 'client') {
             return callback(new Error('Invalid params'))
         }
