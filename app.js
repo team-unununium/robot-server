@@ -87,6 +87,21 @@ io.on('connection', (socket) => {
         callback(false)
     })
 
+    // Only called from client side
+    socket.on('clientRotateCamera', (directions, callback) => {
+        socket.broadcast.emit('robotRotateCamera', directions)
+    })
+
+    // Only called from client side
+    socket.on('clientStartMoving', (data, callback) => {
+        socket.broadcast.emit('robotStartMoving')
+    })
+
+    // Only called from client side
+    socket.on('clientStopMoving', (data, callback) => {
+        socket.broadcast.emit('robotStopMoving')
+    })
+
     // Only called from robot side
     socket.on('updateData', (data, callback) => {
         socket.broadcast.emit('dataReceived', data)
@@ -108,7 +123,7 @@ app.post('/access', async (req, res) => {
 
 // Connection Test
 app.get('/test', (req, res) => {
-    res.send()
+    res.send("Server is online")
 })
 
 app.get('*', (req, res) => {
