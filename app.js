@@ -41,11 +41,6 @@ socketauth(io, {
 })
 
 io.on('connection', (socket) => {
-    const receiveDataCallback = (e, data) => {
-        if (!e) {
-            socket.broadcast.emit('clientDataReceived', data)
-        }
-    }
 
     // Called from client and robot side
     socket.on('join', (type, callback) => {
@@ -69,12 +64,13 @@ io.on('connection', (socket) => {
             })
         }
         // Get initial data
-        io.emit('robotRequestData', null, receiveDataCallback)
+        io.emit('robotRequestData')
+        io.emit('robotRequestStreamUrl')
     })
 
     // Only called from client side
     socket.on('clientRequestData', (data, callback) => {
-        socket.broadcast.emit('requestData', null, receiveDataCallback)
+        socket.broadcast.emit('robotRequestData')
     })
 
     // Only called from client side
