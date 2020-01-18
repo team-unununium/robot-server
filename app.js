@@ -13,6 +13,7 @@ require('./utils/mongoose')
 const AppClient = require('./models/AppClient')
 
 const app = express()
+app.use(express.json())
 const server = http.createServer(app)
 const io = socketio(server)
 
@@ -99,13 +100,13 @@ io.on('connection', (socket) => {
 
 // Get token using GUID and common secret
 app.post('/access', async (req, res) => {
-    if (!req.guid || !req.secret || req.secret !== process.env.SERVER_CLIENT_SECRET) {
-        console.log("TEMP134: " + require('util').inspect(req, false, null, true))
+    console.log(req.body)
+    if (!req.body || !req.body.guid || !req.body.secret || req.body.secret !== process.env.SERVER_CLIENT_SECRET) {
         return res.status(400).send()
     }
 
     // Overwrite existing client data
-    const client = new AppClient({ guid: req.guid, token: jwt.sign({ _id: req.guid })})
+    const client = new AppClient({ guid: req.body.guid, token: jwt.sign({ _id: req.body.guid }, process.env.JWT_SECRET)})
     await client.save()
 
     res.status(201).send(client)

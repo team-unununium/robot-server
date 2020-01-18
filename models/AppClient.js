@@ -13,3 +13,5 @@ const appClientSchema = new mongoose.Schema({
 })
 
 const AppClient = mongoose.model('AppClient', appClientSchema)
+
+module.exports = AppClient
