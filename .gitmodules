@@ -1,0 +1,3 @@
+[submodule "rtmp-server-nodejs"]
+	path = rtmp-server-nodejs
+	url = https://github.com/pc-chin/rtmp-server-nodejs.git
