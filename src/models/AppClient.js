@@ -9,6 +9,11 @@ const appClientSchema = new mongoose.Schema({
     token: {
         type: String,
         required: true
+    },
+    type: {
+        type: String,
+        enum: ['client', 'robot'],
+        required: true
     }
 })
 
