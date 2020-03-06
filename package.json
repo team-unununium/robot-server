@@ -4,8 +4,8 @@
   "description": "A server side program for our Hack & Roll 2020 project.",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js",
-    "dev": "env-cmd -f ./config/dev.env nodemon app.js"
+    "start": "node src/app.js",
+    "dev": "env-cmd -f ./config/dev.env nodemon src/app.js"
   },
   "repository": {
     "type": "git",
