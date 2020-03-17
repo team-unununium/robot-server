@@ -1,5 +1,5 @@
 // Initialization statements
-require('events').EventEmitter.defaultMaxListeners = 15;
+require('events').EventEmitter.defaultMaxListeners = 25;
 require('./utils/mongoose')
 
 // System/npm modules
@@ -9,40 +9,21 @@ const socketio = require('socket.io')
 const socketauth = require('socketio-auth')
 
 // User defined modules
-const AppClient = require('./models/AppClient')
 const router = require('./utils/router')
-const socketConnection = require('./utils/socket')
+const socketfunc = require('./utils/socket')
 
-// Initialize Express
+// Initialize Express server
 const app = express()
 app.use(express.json())
 const server = http.createServer(app)
+
+// Set up sockets
 const io = socketio(server)
+socketauth(io, socketfunc.auth(io))
+io.on('connection', socketfunc.connection(io))
 
+// Start server
 const port = process.env.PORT
-
-// Socket.io Authentication
-socketauth(io, {
-    authenticate: (socket, data, callback) => {
-        const guid = data.guid
-        const token = data.token
-
-        AppClient.findOne({guid, token}, (e, client) => {
-            if (e || !client) {
-                callback(null, false)
-            } else {
-                callback(null, true)
-            }
-        })
-    },
-    disconnect: (socket) => {
-        // TODO: Complete
-    },
-    timeout: 5000
-})
-
-io.on('connection', socketConnection(io))
-
 app.use(router)
 app.listen(port, () => {
     console.log('Server is up on port ' + port)
