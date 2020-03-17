@@ -23,7 +23,7 @@ const auth = function(io) {
             })
         },
         disconnect: (socket) => {
-            AppClient.deleteOne({ guid = socket.data_guid }, (e) => console.log('Error deleting socket with guid', socket.data_guid, '\nError is', e))
+            AppClient.deleteOne({ guid: socket.data_guid }, (e) => console.log('Error deleting socket with guid', guid, '\nError is', e))
             if (socket.data_type === 'robot') {
                 io.emit('clientRemovePeer')
             } else {
@@ -42,7 +42,7 @@ const connection = function(io) {
         // All client side function receivers
         socket.on('clientSendSessionInfo', (rtcInfo, callback) => {
             socket.data_rtc = rtcInfo
-            AppClient.findOne({ type = 'robot' }, (e, client) => {
+            AppClient.findOne({ type: 'robot' }, (e, client) => {
                 if (e) {
                     console.log('Error in database query, error is', e)
                 } else if (client) {
