@@ -15,6 +15,9 @@ const socketfunc = require('./utils/socket')
 // Initialize Express server
 const app = express()
 app.use(express.json())
+app.use(router)
+
+// Create HTTP Server from Express
 const server = http.createServer(app)
 
 // Set up sockets
@@ -24,7 +27,6 @@ io.on('connection', socketfunc.connection(io))
 
 // Start server
 const port = process.env.PORT
-app.use(router)
-app.listen(port, () => {
+server.listen(port, () => {
     console.log('Server is up on port ' + port)
 })
