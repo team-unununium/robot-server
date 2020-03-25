@@ -67,11 +67,17 @@ router.get('/test', (req, res) => {
 })
 
 router.get('*', (req, res) => {
-    res.status(404).send()
+    res.status(404).send({
+        error: 404,
+        message: 'Could not GET ' + req.path
+    })
 })
 
 router.all('*', (req, res) => {
-    res.status(405).send()
+    res.status(405).send({
+        error: 405,
+        message: 'Method ' + req.method + ' ' + req.path + ' not found'
+    })
 })
 
 module.exports = router
