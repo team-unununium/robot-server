@@ -23,13 +23,17 @@ router.post('/access', async (req, res) => {
         type = 'client'
     } else if (req.body.secret === process.env.SERVER_ROBOT_SECRET) {
         // Check if robot exists in database
+        var failReq = false
         await AppClient.findOne({ type: 'robot' }, (e, client) => {
             if (e) {
-                return res.status(500).send()
+                failReq = true
+                res.status(500).send()
             } else if (client) {
-                return res.status(401).send()
+                failReq = true
+                res.status(401).send()
             }
         })
+        if (failReq) return
         type = 'robot'
     } else {
         // Secret doesn't match any possible secrets
@@ -49,6 +53,28 @@ router.post('/access', async (req, res) => {
     const client = new AppClient({ guid: req.body.guid, token: jwt.sign({ _id: req.body.guid }, process.env.JWT_SECRET), type})
     await client.save()
     res.status(201).send(client)
+})
+
+/* All possible response codes:
+- 204: Client successfully deleted
+- 400: Incorrect parameters provided
+- 404: The client could not be found
+- 500: Error occured while querying database / deleting user
+*/
+router.delete('/access', (req, res) => {
+    if (!req.body || !req.body.guid || !req.body.token) {
+        return res.status(400).send()
+    }
+
+    await AppClient.deleteOne({ guid: req.body.guid, token: req.body.token }, (e, client) => {
+        if (e) {
+            return res.status(500).send()
+        } else if (client) {
+            return res.status(204).send()
+        } else {
+            return res.status(404).send()
+        }
+    })
 })
 
 // Show info abt website

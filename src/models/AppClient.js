@@ -14,6 +14,11 @@ const appClientSchema = new mongoose.Schema({
         type: String,
         enum: ['client', 'robot'],
         required: true
+    },
+    createdAt: { 
+        type: Date, 
+        expires: 43200, 
+        default: Date.now 
     }
 })
 
