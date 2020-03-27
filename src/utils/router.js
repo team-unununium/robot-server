@@ -61,7 +61,7 @@ router.post('/access', async (req, res) => {
 - 404: The client could not be found
 - 500: Error occured while querying database / deleting user
 */
-router.delete('/access', (req, res) => {
+router.delete('/access', async (req, res) => {
     if (!req.body || !req.body.guid || !req.body.token) {
         return res.status(400).send()
     }
