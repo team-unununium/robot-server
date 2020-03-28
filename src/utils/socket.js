@@ -23,7 +23,7 @@ const auth = function(io) {
             })
         },
         disconnect: (socket) => {
-            AppClient.deleteOne({ guid: socket.data_guid }, (e) => console.log('Error deleting socket with guid', guid, '\nError is', e))
+            AppClient.deleteOne({ guid: socket.data_guid }, (e) => console.log('Error deleting socket with guid', socket.data_guid, '\nError is', e))
             if (socket.data_type === 'robot') {
                 io.emit('clientRemovePeer')
             } else {
