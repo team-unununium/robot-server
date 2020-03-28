@@ -38,9 +38,14 @@ const connection = function(io) {
     // All functions starting with robot would only be sent to/from robots, vice versa for clients
     return (socket) => {
         // socket.on('join') is handled by auth.postAuthenticate
+        // The if statements is to prevent malicious connection to the socket pretending to be someone else's role
 
         // All client side function receivers
         socket.on('clientSendSessionInfo', (rtcInfo, callback) => {
+            if (socket.data_type === 'robot') {
+                return callback()
+            }
+
             socket.data_rtc = rtcInfo
             AppClient.findOne({ type: 'robot' }, (e, client) => {
                 if (e) {
@@ -53,23 +58,34 @@ const connection = function(io) {
             })
         })
 
-        socket.on('clientRotate', (data, callback) => {
-            io.emit('robotRotate', data)
+        // All operator side function receivers
+        socket.on('operatorRotate', (data, callback) => {
+            if (socket.data_type === 'operator') {
+                io.emit('robotRotate', data)
+            }
             callback()
         })
 
-        socket.on('clientStartMoving', (data, callback) => {
-            io.emit('robotStartMoving')
+        socket.on('operatorStartMoving', (data, callback) => {
+            if (socket.data_type === 'operator') {
+                io.emit('robotStartMoving')
+            }
             callback()
         })
 
-        socket.on('clientStopMoving', (data, callback) => {
-            io.emit('robotStopMoving')
+        socket.on('operatorStopMoving', (data, callback) => {
+            if (socket.data_type === 'operator') {
+                io.emit('robotStopMoving')
+            }
             callback()
         })
 
         // All robot side function receivers
         socket.on('robotSendSessionInfo', (rtcInfo, callback) => {
+            if (socket.data_type !== 'robot') {
+                return callback()
+            }
+
             socket.data_rtc = rtcInfo
             io.emit('clientAddPeer', socket.data_rtc)
 
@@ -85,7 +101,9 @@ const connection = function(io) {
         })
         
         socket.on('robotUpdateData', (data, callback) => {
-            io.emit('clientUpdateData', data)
+            if (socket.data_type === 'robot') {
+                io.emit('clientUpdateData', data)
+            }
             callback()
         })
     }

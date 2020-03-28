@@ -9,7 +9,7 @@ const router = new express.Router()
 /* All possible reponse codes:
 -  201: Operation completed successfully
 -  400: body/guid/secret incorrect/not provided
--  401 (Robot): Another robot already exists
+-  401 (Robot / Operator): Another robot/operator already exists
 -  403: A client with the same GUID already exists
 -  500: Error occured while querying database */
 router.post('/access', async (req, res) => {
@@ -35,6 +35,20 @@ router.post('/access', async (req, res) => {
         })
         if (failReq) return
         type = 'robot'
+    } else if (req.body.secret === process.env.SERVER_OPERATOR_SECRET) {
+        // Check if operator exists in database
+        var failReq = false
+        await AppClient.findOne({ type: 'operator' }, (e, client) => {
+            if (e) {
+                failReq = true
+                res.status(500).send()
+            } else if (client) {
+                failReq = true
+                res.status(401).send()
+            }
+        })
+        if (failReq) return
+        type = 'operator'
     } else {
         // Secret doesn't match any possible secrets
         return res.status(400).send()

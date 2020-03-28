@@ -25,6 +25,7 @@ You would need to clone the repository and set the following environment variabl
  - `JWT_SECRET`: The secret used to generate tokens for the clients and robots.
  - `SERVER_CLIENT_SECRET`: The secret used to verify the client, this variable should be present on the client as well.
  - `SERVER_ROBOT_SECRET`: The secret used to verify the robot, this variable should be present on the robot as well.
+ - `SERVER_OPERATOR_SECRET`: The secret used to verify the operator, this variable should be present on the client as well.
  
  After that, just run `npm install --production` then `npm start` and you should be good to go!
  

@@ -12,7 +12,7 @@ const appClientSchema = new mongoose.Schema({
     },
     type: {
         type: String,
-        enum: ['client', 'robot'],
+        enum: ['client', 'robot', 'operator'],
         required: true
     },
     createdAt: { 
