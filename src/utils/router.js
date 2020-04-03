@@ -1,9 +1,15 @@
 // All Express routes
 const express = require('express')
+const got = require('got')
 const jwt = require('jsonwebtoken')
 
 const AppClient = require('../models/AppClient')
 const router = new express.Router()
+
+// No robots
+router.get('/robots.txt', (req, res) => {
+    res.send('User-agent: \*\nDisallow: /')
+})
 
 // Get token using GUID and common secrets
 /* All possible reponse codes:
@@ -89,6 +95,54 @@ router.delete('/access', async (req, res) => {
             return res.status(404).send()
         }
     })
+})
+
+// Global variables used
+var dlVersion, dlLink, dlPage, dlLast
+const setDlLink = async function () {
+    const url = 'https://api.github.com/repos/team-unununium/HnR-2020-VR-Client/releases/latest'
+    const body = JSON.parse((await got(url)).body)
+    var download = ''
+    // Find the first assets that is an APK
+    body.assets.forEach((asset) => {
+        if (asset.content_type === 'application/vnd.android.package-archive') {
+            download = asset.browser_download_url
+            return false
+        } else {
+            return true
+        }
+    })
+    dlVersion = body.tag_name
+    dlLink = download
+    dlPage = body.html_url
+    dlLast = Date.now()
+}
+
+router.get('/client/latest', async (req, res) => {
+    try {
+        // Only updates result once every 30 mins
+        if (!dlLast || Date.now().toFixed() - dlLast.toFixed() > 30 * 60 * 1000) {
+            await setDlLink()
+        }
+        if (dlLink.length === 0) {
+            return res.status(502).send({
+                error: 502,
+                message: 'The download URL could not be found.'
+            })
+        }
+
+        if (req.query.dl && req.query.dl === 'true') {
+            return res.redirect(dlLink)
+        } else {
+            return res.send({ version: dlVersion, download: dlLink, page: dlPage })
+        }
+    } catch (e) {
+        console.log(e)
+        return res.status(502).send({
+            error: 502,
+            message: 'The GitHub server could not be reached.'
+        })
+    }
 })
 
 // Show info abt website
