@@ -16,7 +16,6 @@ router.get('/robots.txt', (req, res) => {
 -  201: Operation completed successfully
 -  400: body/guid/secret incorrect/not provided
 -  401 (Robot / Operator): Another robot/operator already exists
--  403: A client with the same GUID already exists
 -  500: Error occured while querying database */
 router.post('/access', async (req, res) => {
     if (!req.body || !req.body.guid || !req.body.secret) {
@@ -59,15 +58,6 @@ router.post('/access', async (req, res) => {
         // Secret doesn't match any possible secrets
         return res.status(400).send()
     }
-
-    // Check if client already exists
-    await AppClient.findOne({ guid: req.body.guid }, (e, client) => {
-        if (e) {
-            return res.status(500).send()
-        } else if (client) {
-            return res.status(403).send()
-        }
-    })
 
     // Save client
     const client = new AppClient({ guid: req.body.guid, token: jwt.sign({ _id: req.body.guid }, process.env.JWT_SECRET), type})
