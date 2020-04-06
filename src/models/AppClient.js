@@ -19,6 +19,10 @@ const appClientSchema = new mongoose.Schema({
         type: Date, 
         expires: 43200, 
         default: Date.now 
+    },
+    online: {
+        type: Boolean,
+        default: false
     }
 })
 

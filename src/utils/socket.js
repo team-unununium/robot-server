@@ -29,6 +29,24 @@ const auth = function(io) {
             } else {
                 io.emit('robotRemovePeer', socket.data_rtc)
             }
+            AppClient.findOne({ guid: socket.data_guid }, (e, client) => {
+                if (e) {
+                    print('Socket with GUID', socket.data_guid, ' not found')
+                } else {
+                    client[online] = false
+                    client.save((e) => console.log('Error changing online status of socket with GUID ', socket.data_guid, '\nError is', e))
+                }
+            })
+        },
+        postAuthenticate: (socket, data) => {
+            AppClient.findOne({ guid: socket.data_guid }, (e, client) => {
+                if (e) {
+                    print('Socket with GUID', socket.data_guid, ' not found')
+                } else {
+                    client[online] = true
+                    client.save((e) => console.log('Error changing online status of socket with GUID ', socket.data_guid, '\nError is', e))
+                }
+            })
         },
         timeout: 5000
     }
