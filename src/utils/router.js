@@ -1,4 +1,5 @@
 // All Express routes
+const basicAuth = require('express-basic-auth')
 const express = require('express')
 const got = require('got')
 const jwt = require('jsonwebtoken')
@@ -143,6 +144,19 @@ router.get('/client/latest', async (req, res) => {
             message: 'The GitHub server could not be reached.'
         })
     }
+})
+
+// Deletes all AppClient data
+router.get('/nuke', basicAuth({
+    users: { admin: ADMIN_PW }
+}), (req, res) => {
+    AppClient.deleteMany({}, (e) => {
+        if (e) {
+            res.send(500)
+        } else {
+            res.send('Database wiped')
+        }
+    })
 })
 
 // Show info abt website

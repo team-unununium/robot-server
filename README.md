@@ -26,12 +26,14 @@ You would need to clone the repository and set the following environment variabl
  - `SERVER_CLIENT_SECRET`: The secret used to verify the client, this variable should be present on the client as well.
  - `SERVER_ROBOT_SECRET`: The secret used to verify the robot, this variable should be present on the robot as well.
  - `SERVER_OPERATOR_SECRET`: The secret used to verify the operator, this variable should be present on the client as well.
+ - `ADMIN_PW`: The password which allows the admin to login and delete all data located on the database. *Warning: This password is **extremely dangerous** should **never** be leaked under any circumstances.*
  
  After that, just run `npm install --production` then `npm start` and you should be good to go!
  
 ## Installation notes
 - Due to the way the video feeds and data communication works between the server, robot and client, only **one** robot is allowed onto the Socket.IO connection of each server at a time. To set up systems with multiple robots, multiple servers would need to be set up. We have no plans of implementing support for multiple robots in the future.
 - The default host for the server is `localhost`. To modify the host, you may need to modify the code for listening located in the last part of `src/app.js`.
+- If there is some sort of error with the database, you can wipe all data from it by accessing `/nuke` with the username `admin` and password `ADMIN_PW`. This should only be used as a last resort.
 
 # If you wish to help
 
