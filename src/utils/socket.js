@@ -33,7 +33,7 @@ const auth = function(io) {
                 if (e) {
                     print('Socket with GUID', socket.data_guid, ' not found')
                 } else {
-                    client[online] = false
+                    client['online'] = false
                     client.save((e) => console.log('Error changing online status of socket with GUID ', socket.data_guid, '\nError is', e))
                 }
             })
@@ -43,7 +43,7 @@ const auth = function(io) {
                 if (e) {
                     print('Socket with GUID', socket.data_guid, ' not found')
                 } else {
-                    client[online] = true
+                    client['online'] = true
                     client.save((e) => console.log('Error changing online status of socket with GUID ', socket.data_guid, '\nError is', e))
                 }
             })
