@@ -148,7 +148,7 @@ router.get('/client/latest', async (req, res) => {
 
 // Deletes all AppClient data
 router.get('/nuke', basicAuth({
-    users: { admin: ADMIN_PW }
+    users: { admin: process.env.ADMIN_PW }
 }), (req, res) => {
     AppClient.deleteMany({}, (e) => {
         if (e) {
