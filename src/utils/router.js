@@ -71,8 +71,10 @@ router.post('/access', async (req, res) => {
     })
 
     // Save client
-    const client = new AppClient({ guid: req.body.guid, token: jwt.sign({ _id: req.body.guid }, process.env.JWT_SECRET), type})
-    await client.save()
+    const client = new AppClient({ guid: req.body.guid, token: jwt.sign({ _id: req.body.guid }, process.env.JWT_SECRET), type, online:false})
+    await client.save((e) => {
+        return res.status(500).send()
+    })
     res.status(201).send(client)
 })
 
