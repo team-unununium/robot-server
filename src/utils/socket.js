@@ -10,7 +10,6 @@ const AppClient = require('../models/AppClient')
 
 const dataCheck = function(data) {
     // Check if data is String, if yes, then parse data
-    console.log(typeof data)
     if (typeof data === "string") {
         data = JSON.parse(data)
     }
@@ -20,17 +19,12 @@ const dataCheck = function(data) {
 const auth = function(io) { 
     return {
         authenticate: (socket, data, callback) => {
-            dataCheck(data)
+            data = dataCheck(data)
             const guid = data.guid
             const token = data.token
 
             socket.data_guid = guid
             AppClient.findOne({guid, token}, (e, client) => {
-                console.log('Data is', data)
-                console.log('GUID is', guid)
-                console.log('Token is', token)
-                console.log('Error is', e)
-                console.log('Client is', client)
                 if (!e && client) {
                     socket.data_type = client.type
                 }
@@ -71,7 +65,7 @@ const connection = function(io) {
 
         // All operator side function receivers
         socket.on('operatorRotate', (data, callback) => {
-            dataCheck(data)
+            data = dataCheck(data)
             if (socket.data_type === 'operator') {
                 io.emit('robotRotate', data)
             }
@@ -79,7 +73,7 @@ const connection = function(io) {
         })
 
         socket.on('operatorStartMoving', (data, callback) => {
-            dataCheck(data)
+            data = dataCheck(data)
             if (socket.data_type === 'operator') {
                 io.emit('robotStartMoving')
             }
@@ -87,7 +81,7 @@ const connection = function(io) {
         })
 
         socket.on('operatorStopMoving', (data, callback) => {
-            dataCheck(data)
+            data = dataCheck(data)
             if (socket.data_type === 'operator') {
                 io.emit('robotStopMoving')
             }
@@ -95,7 +89,7 @@ const connection = function(io) {
         })
         
         socket.on('robotUpdateData', (data, callback) => {
-            dataCheck(data)
+            data = dataCheck(data)
             if (socket.data_type === 'robot') {
                 io.emit('clientUpdateData', data)
             }
