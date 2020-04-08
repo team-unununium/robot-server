@@ -10,7 +10,8 @@ const AppClient = require('../models/AppClient')
 
 const dataCheck = function(data) {
     // Check if data is String, if yes, then parse data
-    if (data.constructor === "".constructor) {
+    console.log(typeof data)
+    if (typeof data === "string") {
         data = JSON.parse(data)
     }
     return data
@@ -25,6 +26,7 @@ const auth = function(io) {
 
             socket.data_guid = guid
             AppClient.findOne({guid, token}, (e, client) => {
+                console.log('Data is', data)
                 console.log('GUID is', guid)
                 console.log('Token is', token)
                 console.log('Error is', e)
