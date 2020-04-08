@@ -71,10 +71,17 @@ router.post('/access', async (req, res) => {
             if (client['online']) {
                 return res.status(403).send()
             } else {
-                const newClient = new AppClient({ guid: req.body.guid, token: jwt.sign({ _id: req.body.guid }, process.env.JWT_SECRET), type, online:false})
-                await newClient.save()
-                res.status(201).send(newClient)
+                // GUID remains the same
+                client['token'] = jwt.sign({ _id: req.body.guid, date: '' + new Date() }, process.env.JWT_SECRET)
+                client['type'] = type
+                client['online'] = false
+                await client.save()
+                return res.status(201).send(client)
             }
+        } else {
+            const newClient = new AppClient({ guid: req.body.guid, token: jwt.sign({ _id: req.body.guid, date: '' + new Date() }, process.env.JWT_SECRET), type, online:false})
+            await newClient.save()
+            return res.status(201).send(newClient)
         }
     })
 })
