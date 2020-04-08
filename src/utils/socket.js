@@ -31,10 +31,12 @@ const auth = function(io) {
             }
             AppClient.findOne({ guid: socket.data_guid }, (e, client) => {
                 if (e) {
-                    print('Socket with GUID', socket.data_guid, ' not found')
-                } else {
+                    print('Error while deleting socket with GUID', socket.data_guid)
+                } else if (client) {
                     client['online'] = false
                     client.save((e) => {if (e) console.log('Error changing online status of socket with GUID ', socket.data_guid, '\nError is', e)})
+                } else {
+                    print('Client with GUID', socket.data_guid, 'not found')
                 }
             })
         },
