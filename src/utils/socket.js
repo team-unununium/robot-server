@@ -58,24 +58,6 @@ const connection = function(io) {
         // socket.on('join') is handled by auth.postAuthenticate
         // The if statements is to prevent malicious connection to the socket pretending to be someone else's role
 
-        // All client side function receivers
-        socket.on('clientSendSessionInfo', (rtcInfo, callback) => {
-            if (socket.data_type === 'robot') {
-                return callback()
-            }
-
-            socket.data_rtc = rtcInfo
-            AppClient.findOne({ type: 'robot' }, (e, client) => {
-                if (e) {
-                    console.log('Error in database query, error is', e)
-                } else if (client) {
-                    io.emit('robotAddPeer', socket.data_rtc)
-                    io.emit('robotRequestUpdateAll')
-                }
-                callback()
-            })
-        })
-
         // All operator side function receivers
         socket.on('operatorRotate', (data, callback) => {
             if (socket.data_type === 'operator') {
@@ -95,26 +77,6 @@ const connection = function(io) {
             if (socket.data_type === 'operator') {
                 io.emit('robotStopMoving')
             }
-            callback()
-        })
-
-        // All robot side function receivers
-        socket.on('robotSendSessionInfo', (rtcInfo, callback) => {
-            if (socket.data_type !== 'robot') {
-                return callback()
-            }
-
-            socket.data_rtc = rtcInfo
-            io.emit('clientAddPeer', socket.data_rtc)
-
-            // All sockets are assumed to be peers
-            const peerRtcList = []
-            const socketList = io.sockets.sockets
-            for (var socketId in socketList) {
-                const socket = socketList[socketId]
-                peerRtcList.push(socket.data_rtc)
-            }
-            socket.emit('robotAddMultiplePeers', peerRtcList)
             callback()
         })
         
