@@ -16,6 +16,7 @@ const auth = function(io) {
 
             socket.data_guid = guid
             AppClient.findOne({guid, token}, (e, client) => {
+                console.log('Error is', e, 'Client is', client)
                 if (!e && client) {
                     socket.data_type = client.type
                 }
