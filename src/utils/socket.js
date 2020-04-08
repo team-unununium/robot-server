@@ -16,7 +16,10 @@ const auth = function(io) {
 
             socket.data_guid = guid
             AppClient.findOne({guid, token}, (e, client) => {
-                console.log('Error is', e, 'Client is', client)
+                console.log('GUID is', guid)
+                console.log('Token is', token)
+                console.log('Error is', e)
+                console.log('Client is', client)
                 if (!e && client) {
                     socket.data_type = client.type
                 }
@@ -24,19 +27,14 @@ const auth = function(io) {
             })
         },
         disconnect: (socket) => {
-            if (socket.data_type === 'robot') {
-                io.emit('clientRemovePeer')
-            } else {
-                io.emit('robotRemovePeer', socket.data_rtc)
-            }
             AppClient.findOne({ guid: socket.data_guid }, (e, client) => {
                 if (e) {
-                    print('Error while deleting socket with GUID', socket.data_guid)
+                    console.log('Error while deleting socket with GUID', socket.data_guid)
                 } else if (client) {
                     client['online'] = false
                     client.save((e) => {if (e) console.log('Error changing online status of socket with GUID ', socket.data_guid, '\nError is', e)})
                 } else {
-                    print('Client with GUID', socket.data_guid, 'not found')
+                    console.log('Client with GUID', socket.data_guid, 'not found')
                 }
             })
         },
