@@ -61,21 +61,22 @@ router.post('/access', async (req, res) => {
         return res.status(400).send()
     }
 
-    // Check if client already exists
-    await AppClient.findOne({ guid: req.body.guid, online: true }, (e, client) => {
+    // Save client
+    var client
+    await AppClient.findOne({ guid: req.body.guid }, (e, client) => {
         if (e) {
             return res.status(500).send()
         } else if (client) {
-            return res.status(403).send()
+            // Only overwrite if client is not online
+            if (client['online']) {
+                return res.status(403).send()
+            } else {
+                const client = new AppClient({ guid: req.body.guid, token: jwt.sign({ _id: req.body.guid }, process.env.JWT_SECRET), type, online:false})
+                await client.save()
+                res.status(201).send(client)
+            }
         }
     })
-
-    // Save client
-    const client = new AppClient({ guid: req.body.guid, token: jwt.sign({ _id: req.body.guid }, process.env.JWT_SECRET), type, online:false})
-    await client.save((e) => {
-        return res.status(500).send()
-    })
-    res.status(201).send(client)
 })
 
 /* All possible response codes:
