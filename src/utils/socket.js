@@ -23,7 +23,7 @@ const auth = function(io) {
             })
         },
         disconnect: (socket) => {
-            AppClient.deleteOne({ guid: socket.data_guid }, (e) => console.log('Error deleting socket with guid', socket.data_guid, '\nError is', e))
+            AppClient.deleteOne({ guid: socket.data_guid }, (e) => {if (e) console.log('Error deleting socket with guid', socket.data_guid, '\nError is', e)})
             if (socket.data_type === 'robot') {
                 io.emit('clientRemovePeer')
             } else {
@@ -34,7 +34,7 @@ const auth = function(io) {
                     print('Socket with GUID', socket.data_guid, ' not found')
                 } else {
                     client['online'] = false
-                    client.save((e) => console.log('Error changing online status of socket with GUID ', socket.data_guid, '\nError is', e))
+                    client.save((e) => {if (e) console.log('Error changing online status of socket with GUID ', socket.data_guid, '\nError is', e)})
                 }
             })
         },
@@ -44,7 +44,7 @@ const auth = function(io) {
                     print('Socket with GUID', socket.data_guid, ' not found')
                 } else {
                     client['online'] = true
-                    client.save((e) => console.log('Error changing online status of socket with GUID ', socket.data_guid, '\nError is', e))
+                    client.save((e) => {if (e) console.log('Error changing online status of socket with GUID ', socket.data_guid, '\nError is', e)})
                 }
             })
         },
