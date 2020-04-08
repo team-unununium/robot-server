@@ -63,7 +63,7 @@ router.post('/access', async (req, res) => {
 
     // Save client
     var client
-    await AppClient.findOne({ guid: req.body.guid }, (e, client) => {
+    AppClient.findOne({ guid: req.body.guid }, async (e, client) => {
         if (e) {
             return res.status(500).send()
         } else if (client) {
