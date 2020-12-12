@@ -19,15 +19,15 @@
   "homepage": "https://github.com/pc-chin/HnR2020-VR-Server#readme",
   "devDependencies": {
     "env-cmd": "^10.1.0",
-    "nodemon": "^2.0.2"
+    "nodemon": "^2.0.6"
   },
   "dependencies": {
     "express": "^4.17.1",
     "express-basic-auth": "^1.2.0",
     "got": "^10.7.0",
     "jsonwebtoken": "^8.5.1",
-    "mongodb": "^3.5.5",
-    "mongoose": "^5.9.6",
+    "mongodb": "^3.6.3",
+    "mongoose": "^5.11.7",
     "socket.io": "^2.3.0",
     "socketio-auth": "^0.1.1"
   }
