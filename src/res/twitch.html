@@ -6,13 +6,15 @@
   <title>Live Feed | Unununium</title>
 </head>
 <body>
-  <iframe src="https://player.twitch.tv/?channel=PLACEHOLDER_CHANNEL&parent=PLACEHOLDER_PARENT" frameborder="0" allowfullscreen="true" scrolling="no" height="1080" width="1920"></iframe>
+  <iframe id="twitch-frame" src="https://player.twitch.tv/?channel=PLACEHOLDER_CHANNEL&parent=PLACEHOLDER_PARENT" frameborder="0" allowfullscreen="true" scrolling="no" height="1080" width="1920" onload="onloadHandler();"></iframe>
 </body>
-<script>
-    // Removes the player UI elements
-    console.log('I1');
-    document.getElementsByClassName('player-ui')[0].style.display='none';
-    console.log('I2');
-    document.getElementById('#amaznidpxl').style.display='none';
+<script type="text/javascript">
+    function onLoadHandler() {
+        // Removes the player UI elements
+        console.log('I1');
+        document.getElementsByClassName('player-ui')[0].style.display='none';
+        console.log('I2');
+        document.getElementById('#amaznidpxl').style.display='none';
+    }
 </script>
 </html>
