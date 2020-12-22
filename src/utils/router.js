@@ -1,11 +1,13 @@
 // All Express routes
 const basicAuth = require('express-basic-auth')
 const express = require('express')
+const fs = require('fs')
 const got = require('got')
 const jwt = require('jsonwebtoken')
 
 const AppClient = require('../models/AppClient')
 const router = new express.Router()
+const twitchEmbed = fs.readFileSync('../res/twitch.html'); // Stores the embed HTML page to reduce IO cycles
 
 // No robots
 router.get('/robots.txt', (req, res) => {
@@ -178,6 +180,12 @@ router.get('/', (req, res) => {
         devpost: 'https://devpost.com/software/hnr2020-vr-robot',
         repository: 'https://github.com/pc-chin/HnR2020-VR-Server'
     })
+})
+
+// Shows the Twitch embed
+const twitchUsername = process.env.TWITCH_USERNAME || 'codebullet'
+router.get('/embed', (req, res) => {
+    res.send(twitchEmbed.replace('PLACEHOLDER_CHANNEL', twitchUsername).replace('PLACEHOLDER_PARENT', req.hostname))
 })
 
 // Connection Test
