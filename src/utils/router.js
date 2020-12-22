@@ -4,10 +4,13 @@ const express = require('express')
 const fs = require('fs')
 const got = require('got')
 const jwt = require('jsonwebtoken')
+const path = require('path')
 
 const AppClient = require('../models/AppClient')
 const router = new express.Router()
-const twitchEmbed = fs.readFileSync('../res/twitch.html'); // Stores the embed HTML page to reduce IO cycles
+// fs.readFileSync alone seems unable to process the directories
+// Stores the embed HTML page to reduce IO cycles
+const twitchEmbed = fs.readFileSync(path.join(__dirname, '../res/twitch.html'));
 
 // No robots
 router.get('/robots.txt', (req, res) => {
