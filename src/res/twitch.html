@@ -13,17 +13,11 @@
       width: 1920,
       height: 1080,
       channel: "PLACEHOLDER_CHANNEL",
-      parent: ["PLACEHOLDER_PARENT"]
+      parent: ["PLACEHOLDER_PARENT"],
+      controls: false
     };
     var player = new Twitch.Player("unununium-twitch-player", options);
     player.play();
-  </script>
-  <script type="text/javascript">
-    // Removes the player UI elements
-    console.log('I1');
-    document.getElementsByClassName('player-ui')[0].style.display='none';
-    console.log('I2');
-    document.getElementById('#amaznidpxl').style.display='none';
   </script>
 </body>
 </html>
