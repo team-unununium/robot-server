@@ -6,6 +6,7 @@
   <title>Live Feed | Unununium</title>
 </head>
 <body>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   <script src= "https://player.twitch.tv/js/embed/v1.js"></script>
   <div id="unununium-twitch-player"></div>
   <script type="text/javascript">
@@ -18,6 +19,8 @@
     };
     var player = new Twitch.Player("unununium-twitch-player", options);
     player.play();
+    // Hide the border for the child
+    $('#unununium-twitch-player').eq(0).children().eq(1).css('frameBorder', '0');
   </script>
 </body>
 </html>
