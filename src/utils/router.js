@@ -186,7 +186,7 @@ router.get('/', (req, res) => {
 })
 
 // Shows the Twitch embed
-const twitchUsername = process.env.TWITCH_USERNAME
+const twitchUsername = process.env.TWITCH_USERNAME || 'codebullet'
 router.get('/embed', (req, res) => {
     res.send(twitchEmbed.replace('PLACEHOLDER_CHANNEL', twitchUsername).replace('PLACEHOLDER_PARENT', req.hostname))
 })
