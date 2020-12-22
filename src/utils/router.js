@@ -10,7 +10,7 @@ const AppClient = require('../models/AppClient')
 const router = new express.Router()
 // fs.readFileSync alone seems unable to process the directories
 // Stores the embed HTML page to reduce IO cycles
-const twitchEmbed = fs.readFileSync(path.join(__dirname, '../res/twitch.html'));
+const twitchEmbed = fs.readFileSync(path.join(__dirname, '../res/twitch.html'), 'utf8');
 
 // No robots
 router.get('/robots.txt', (req, res) => {
