@@ -6,20 +6,6 @@
   <title>Live Feed | Unununium</title>
 </head>
 <body>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-  <script src= "https://player.twitch.tv/js/embed/v1.js"></script>
-  <div id="unununium-twitch-player"></div>
-  <script type="text/javascript">
-    var options = {
-      width: 1920,
-      height: 1080,
-      channel: "PLACEHOLDER_CHANNEL",
-      parent: ["PLACEHOLDER_PARENT"],
-      controls: false
-    };
-    var player = new Twitch.Player("unununium-twitch-player", options);
-    player.setVolume(1.0);
-    player.play();
-  </script>
+  <iframe src="https://player.twitch.tv?channel=PLACEHOLDER_CHANNEL&amp;controls=false&amp;height=1080&amp;migration=true&amp;parent=PLACEHOLDER_PARENT&amp;referrer=PLACEHOLDER_PARENT%2Fembed&amp;width=1920&amp;autoplay=true" allowfullscreen="" scrolling="no" margin-left="0" margin-right="auto" frameBorder="0" allow="autoplay; fullscreen" title="Twitch" sandbox="allow-modals allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox" width="1920" height="1080"></iframe>
 </body>
 </html>

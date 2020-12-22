@@ -1,5 +1,6 @@
 // All Express routes
 const basicAuth = require('express-basic-auth')
+const escape = require('escape-html')
 const express = require('express')
 const fs = require('fs')
 const got = require('got')
@@ -188,7 +189,7 @@ router.get('/', (req, res) => {
 // Shows the Twitch embed
 const twitchUsername = process.env.TWITCH_USERNAME || 'codebullet'
 router.get('/embed', (req, res) => {
-    res.send(twitchEmbed.replace('PLACEHOLDER_CHANNEL', twitchUsername).replace('PLACEHOLDER_PARENT', req.hostname))
+    res.send(twitchEmbed.replace('PLACEHOLDER_CHANNEL', escape(twitchUsername)).replace('PLACEHOLDER_PARENT', escape(req.hostname)))
 })
 
 // Connection Test
