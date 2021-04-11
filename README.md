@@ -12,10 +12,10 @@ The project consists of 4 main modules: The client, server, Raspberry Pi and Ard
  - [Arduino Module](https://github.com/team-unununium/HnR-2020-VR-Arduino)
 
 # Current module - Server
-The server module is in charge of facilitating communication between the client and the Raspberry Pi. It is made using [Node JS](https://nodejs.org/) with [Express](https://www.npmjs.com/package/express) and [Socket.IO](https://www.npmjs.com/package/socket.io). The identities of the client and the robot is identified through the environment variables SERVER_CLIENT_SECRET and SERVER_ROBOT_SECRET respectively. Express is used to generate the token for clients and robots through /access and Socket.IO is used for the actual communication between the server, client and Raspberry Pi. The video feed is done through WebRTC, which is not relayed through the server. 
+The server module is in charge of facilitating communication between the client and the Raspberry Pi. It is made using [Node JS](https://nodejs.org/) with [Express](https://www.npmjs.com/package/express) and [Socket.IO](https://www.npmjs.com/package/socket.io). The identities of the client and the robot is identified through the environment variables SERVER_CLIENT_SECRET and SERVER_ROBOT_SECRET respectively. Express is used to generate the token for clients and robots through /access and Socket.IO is used for the actual communication between the server, client and Raspberry Pi. The video feed is done through WebRTC, which is not relayed through the server.
 
 ## Existing servers
-As of now, there is a main server at [unununium.pcchin.com](https://unununium.pcchin.com/). A backup server is also available at [unununium-vr-server.herokuapp.com](https://unununium-vr-server.herokuapp.com/)
+The main server is currently [unununium.pcchin.com](https://unununium.pcchin.com/).
 
 ## How to install
 You would need to clone the repository and set the following environment variables:
