@@ -64,6 +64,14 @@ const connection = function(io) {
         // The if statements is to prevent malicious connection to the socket pretending to be someone else's role
 
         // All operator side function receivers
+        socket.on('operatorRotateCamera', (data, callback) => {
+            data = dataCheck(data)
+            if (socket.data_type === 'operator') {
+                io.emit('robotRotateCamera', data)
+            }
+            callback()
+        })
+
         socket.on('operatorRotate', (data, callback) => {
             data = dataCheck(data)
             if (socket.data_type === 'operator') {
@@ -84,6 +92,14 @@ const connection = function(io) {
             data = dataCheck(data)
             if (socket.data_type === 'operator') {
                 io.emit('robotStopMoving')
+            }
+            callback()
+        })
+
+        socket.on('operatorChangeSpeed', (data, callback) => {
+            data = dataCheck(data)
+            if (socket.data_type === 'operator') {
+                io.emit('robotChangeSpeed', data)
             }
             callback()
         })
