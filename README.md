@@ -27,7 +27,6 @@ You would need to clone the repository and set the following environment variabl
  - `SERVER_ROBOT_SECRET`: The secret used to verify the robot, this variable should be present on the robot as well.
  - `SERVER_OPERATOR_SECRET`: The secret used to verify the operator, this variable should be present on the client as well.
  - `ADMIN_PW`: The password which allows the admin to login and delete all data located on the database. *Warning: This password is **extremely dangerous** should **never** be leaked under any circumstances.*
- - `TWITCH_USERNAME`: The Twitch username that the camera footage will be sent to.
  
  After that, just run `npm install --production` then `npm start` and you should be good to go!
  

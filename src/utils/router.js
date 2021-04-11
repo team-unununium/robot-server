@@ -1,17 +1,11 @@
 // All Express routes
 const basicAuth = require('express-basic-auth')
-const escape = require('escape-html')
 const express = require('express')
-const fs = require('fs')
 const got = require('got')
 const jwt = require('jsonwebtoken')
-const path = require('path')
 
 const AppClient = require('../models/AppClient')
 const router = new express.Router()
-// fs.readFileSync alone seems unable to process the directories
-// Stores the embed HTML page to reduce IO cycles
-const twitchEmbed = fs.readFileSync(path.join(__dirname, '../res/twitch.html'), 'utf8');
 
 // No robots
 router.get('/robots.txt', (req, res) => {
@@ -135,7 +129,7 @@ const setDlLink = async function () {
     dlLast = Date.now()
 }
 
-router.get('/client/latest', async (req, res) => {
+router.get('/client/latest', async (req, res) => { 
     try {
         // Only updates result once every 30 mins
         if (!dlLast || Date.now().toFixed() - dlLast.toFixed() > 30 * 60 * 1000) {
@@ -184,12 +178,6 @@ router.get('/', (req, res) => {
         devpost: 'https://devpost.com/software/hnr2020-vr-robot',
         repository: 'https://github.com/pc-chin/HnR2020-VR-Server'
     })
-})
-
-// Shows the Twitch embed
-const twitchUsername = process.env.TWITCH_USERNAME || 'codebullet'
-router.get('/embed', (req, res) => {
-    res.send(twitchEmbed.replace('PLACEHOLDER_CHANNEL', escape(twitchUsername)).replace('PLACEHOLDER_PARENT', escape(req.hostname)))
 })
 
 // Connection Test
