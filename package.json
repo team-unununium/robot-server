@@ -12,7 +12,7 @@
     "url": "git+https://github.com/pc-chin/HnR2020-VR-Server.git"
   },
   "author": "Team Unununium",
-  "license": "ISC",
+  "license": "GPL-3.0",
   "bugs": {
     "url": "https://github.com/pc-chin/HnR2020-VR-Server/issues"
   },
@@ -22,7 +22,6 @@
     "nodemon": "^2.0.7"
   },
   "dependencies": {
-    "escape-html": "^1.0.3",
     "express": "^4.17.1",
     "express-basic-auth": "^1.2.0",
     "got": "^10.7.0",
