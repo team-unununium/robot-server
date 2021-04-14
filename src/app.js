@@ -15,15 +15,15 @@ const socketfunc = require('./utils/socket')
 // Initialize Express server
 const app = express()
 app.use(express.json())
-app.use(router)
 
 // Create HTTP Server from Express
 const server = http.createServer(app)
 
 // Set up sockets
-const io = socketio(server)
+const io = socketio(server).of('/client')
 socketauth(io, socketfunc.auth(io))
 io.on('connection', socketfunc.connection(io))
+app.use(router) // Router comes after io to 
 
 // Start server
 const port = process.env.PORT
