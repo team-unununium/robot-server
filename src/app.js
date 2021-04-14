@@ -6,7 +6,6 @@ require('./utils/mongoose')
 const express = require('express')
 const http = require('http')
 const socketio = require('socket.io')
-const socketauth = require('socketio-auth')
 
 // User defined modules
 const router = require('./utils/router')
@@ -21,9 +20,8 @@ const server = http.createServer(app)
 
 // Set up sockets
 const io = socketio(server).of('/client')
-socketauth(io, socketfunc.auth(io))
 io.on('connection', socketfunc.connection(io))
-app.use(router) // Router comes after io to 
+app.use(router) // Router comes after io
 
 // Start server
 const port = process.env.PORT
