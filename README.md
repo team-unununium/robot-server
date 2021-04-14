@@ -3,13 +3,13 @@
 
 This is basically a robot which is controlled by VR. The robot has two cameras and some sensors which are used to give users data about the environment the robot is in. Input from the camera and sensors is displayed on the VR headset. The clients can rotate their headset, which will cause the robot's camera to rotate in the same direction, and by touching the side button of the headset, the robot will start or stop moving.
 
-The project consists of 4 main modules: The client, server, Raspberry Pi and Arduino. All 4 modules communicate with each other either directly or through another module to ensure that the robot functions as expected.
+The project consists of 5 main modules: The client, server, Raspberry Pi (Python and Jitsi Meet client) and Arduino. All 4 modules communicate with each other either directly or through another module to ensure that the robot functions as expected.
 
 ## Module list
- - [Client Module](https://github.com/team-unununium/HnR-2020-VR-Client)
- - [Server Module](https://github.com/team-unununium/HnR-2020-VR-Server)
- - [Raspberry Pi Module](https://github.com/team-unununium/HnR-2020-VR-Pi)
- - [Arduino Module](https://github.com/team-unununium/HnR-2020-VR-Arduino)
+ - [Client Module](https://github.com/team-unununium/robot-client-android)
+ - [Server Module](https://github.com/team-unununium/robot-server)
+ - [Raspberry Pi Module](https://github.com/team-unununium/robot-pi)
+ - [Arduino Module](https://github.com/team-unununium/robot-arduino)
 
 # Current module - Server
 The server module is in charge of facilitating communication between the client and the Raspberry Pi. It is made using [Node JS](https://nodejs.org/) with [Express](https://www.npmjs.com/package/express) and [Socket.IO](https://www.npmjs.com/package/socket.io). The identities of the client and the robot is identified through the environment variables SERVER_CLIENT_SECRET and SERVER_ROBOT_SECRET respectively. Express is used to generate the token for clients and robots through /access and Socket.IO is used for the actual communication between the server, client and Raspberry Pi. The video feed is done through WebRTC, which is not relayed through the server.
