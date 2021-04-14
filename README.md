@@ -9,7 +9,6 @@ The project consists of 5 main modules: The client, server, Raspberry Pi (Python
  - [Client Module](https://github.com/team-unununium/robot-client-android)
  - [Server Module](https://github.com/team-unununium/robot-server)
  - [Raspberry Pi Module](https://github.com/team-unununium/robot-pi)
- - [Jitsi Meet Client Module](https://github.com/team-unununium/robot-pi-video)
  - [Arduino Module](https://github.com/team-unununium/robot-arduino)
 
 # Current module - Server
