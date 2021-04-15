@@ -33,7 +33,7 @@ router.post('/access', async (req, res) => {
         // Check if robot exists in database
         var failReq = false
         await AppClient.findOne({ type: 'robot' }, (e, client) => {
-            if (!debugMode) return // Skips check for debug mode
+            if (debugMode) return // Skips check for debug mode
             if (e) {
                 failReq = true
                 res.status(500).send()

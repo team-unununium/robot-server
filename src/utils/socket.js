@@ -23,9 +23,8 @@ const auth = function(io) {
 			const token = socket.handshake.query.token
 			AppClient.findOne({guid, token}, (e, client) => {
 				if (!e && client) {
+                    socket.data_guid = guid
                     socket.data_type = client.type
-                    client['online'] = true
-                    client.save((e) => {if (e) console.log('Error changing online status of socket with GUID ', socket.data_guid, '\nError is', e)})
                     next()
 				} else {
                     next(new Error('Authentication error'))
@@ -42,6 +41,20 @@ const connection = function(io) {
     return (socket) => {
         // socket.on('join') is handled by auth.postAuthenticate
         // The if statements is to prevent malicious connection to the socket pretending to be someone else's role
+
+        // Adds the user to the database
+        socket.on('join', (data, callback) => {
+            AppClient.findOne({guid: socket.data_guid}, (e, client) => {
+				if (!e && client) {
+                    console.log('Client with GUID', socket.data_guid, 'and type', socket.data_type, 'connected')
+                    client['online'] = true
+                    client.save((e) => {if (e) console.log('Error changing online status of socket with GUID ', socket.data_guid, '\nError is', e)})
+				} else {
+                    console.log('Client with invalid GUID', socket.data_guid,'successfully connected')
+                    client.disconnect()
+                }
+			})
+        })
 
         // Deletes the user from the database when the user is deleted
         socket.on('disconnect', (data, callback) => {
@@ -63,7 +76,6 @@ const connection = function(io) {
             if (socket.data_type === 'operator') {
                 io.emit('robotRotateCamera', data)
             }
-            callback()
         })
 
         socket.on('operatorRotate', (data, callback) => {
@@ -71,7 +83,6 @@ const connection = function(io) {
             if (socket.data_type === 'operator') {
                 io.emit('robotRotate', data)
             }
-            callback()
         })
 
         socket.on('operatorStartMoving', (data, callback) => {
@@ -79,7 +90,6 @@ const connection = function(io) {
             if (socket.data_type === 'operator') {
                 io.emit('robotStartMoving')
             }
-            callback()
         })
 
         socket.on('operatorStopMoving', (data, callback) => {
@@ -87,7 +97,6 @@ const connection = function(io) {
             if (socket.data_type === 'operator') {
                 io.emit('robotStopMoving')
             }
-            callback()
         })
 
         socket.on('operatorChangeSpeed', (data, callback) => {
@@ -95,7 +104,6 @@ const connection = function(io) {
             if (socket.data_type === 'operator') {
                 io.emit('robotChangeSpeed', data)
             }
-            callback()
         })
         
         socket.on('robotUpdateData', (data, callback) => {
@@ -103,7 +111,6 @@ const connection = function(io) {
             if (socket.data_type === 'robot') {
                 io.emit('clientUpdateData', data)
             }
-            callback()
         })
     }
 }
