@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken')
 
 const AppClient = require('../models/AppClient')
 const router = new express.Router()
+const debugMode = process.env.DEBUG_MODE
 
 // No robots
 router.get('/robots.txt', (req, res) => {
@@ -32,6 +33,7 @@ router.post('/access', async (req, res) => {
         // Check if robot exists in database
         var failReq = false
         await AppClient.findOne({ type: 'robot' }, (e, client) => {
+            if (!debugMode) return // Skips check for debug mode
             if (e) {
                 failReq = true
                 res.status(500).send()
@@ -62,7 +64,6 @@ router.post('/access', async (req, res) => {
     }
 
     // Save client
-    var client
     AppClient.findOne({ guid: req.body.guid }, async (e, client) => {
         if (e) {
             return res.status(500).send()
@@ -111,7 +112,7 @@ router.delete('/access', async (req, res) => {
 // Global variables used
 var dlVersion, dlLink, dlPage, dlLast
 const setDlLink = async function () {
-    const url = 'https://api.github.com/repos/team-unununium/HnR-2020-VR-Client/releases/latest'
+    const url = 'https://api.github.com/repos/team-unununium/robot-client-android/releases/latest'
     const body = JSON.parse((await got(url)).body)
     var download = ''
     // Find the first assets that is an APK
@@ -157,10 +158,16 @@ router.get('/client/latest', async (req, res) => {
 })
 
 // Deletes all AppClient data
-router.get('/nuke', basicAuth({
-    users: { admin: process.env.ADMIN_PW },
-    challenge: true
-}), (req, res) => {
+var nukeAuth
+if (debugMode) {
+    nukeAuth = (req, res, next) => next()
+} else {
+    nukeAuth = basicAuth({
+        users: { admin: process.env.ADMIN_PW },
+        challenge: true
+    })
+}
+router.get('/nuke', nukeAuth, (req, res) => {
     AppClient.deleteMany({}, (e) => {
         if (e) {
             res.send(500)
@@ -170,13 +177,39 @@ router.get('/nuke', basicAuth({
     })
 })
 
+// Debug related routes
+router.get('/debug', (req, res) => {
+    const proto = req.secure ? 'https' : 'http'
+    if (debugMode) {
+        res.send({
+            db: proto + '://' + req.hostname + '/debug/db'
+        })
+    } else {
+        res.send('Debug mode disabled')
+    }
+})
+
+if (debugMode) {
+    // Get database contents
+    router.get('/debug/db', async (req, res) => {
+        await AppClient.find({}, (e, clients) => {
+            if (e) {
+                res.send(500)
+            } else {
+                res.send(clients)
+            }
+        })
+    })
+}
+
 // Show info abt website
 router.get('/', (req, res) => {
     res.send({
         name: 'Unununium VR Robot Server',
         host: req.hostname,
         devpost: 'https://devpost.com/software/hnr2020-vr-robot',
-        repository: 'https://github.com/pc-chin/HnR2020-VR-Server'
+        repository: 'https://github.com/pc-chin/HnR2020-VR-Server',
+        debug: debugMode ? true : false
     })
 })
 

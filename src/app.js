@@ -20,6 +20,7 @@ const server = http.createServer(app)
 
 // Set up sockets
 const io = socketio(server).of('/client')
+io.use(socketfunc.auth(io))
 io.on('connection', socketfunc.connection(io))
 app.use(router) // Router comes after io
 
