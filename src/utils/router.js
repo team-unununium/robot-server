@@ -36,8 +36,17 @@ router.post('/access', async (req, res) => {
                 failReq = true
                 res.status(500).send()
             } else if (client) {
-                failReq = true
-                res.status(401).send()
+                if (client['online']) {
+                    failReq = true
+                    res.status(401).send()
+                } else {
+                    await AppClient.deleteOne({ type: 'robot' }, (e, client) => {
+                        if (e) {
+                            failReq = true
+                            res.status(500).send()
+                        }
+                    })
+                }
             }
         })
         if (failReq) return
@@ -50,8 +59,17 @@ router.post('/access', async (req, res) => {
                 failReq = true
                 res.status(500).send()
             } else if (client) {
-                failReq = true
-                res.status(401).send()
+                if (client['online']) {
+                    failReq = true
+                    res.status(401).send()
+                } else {
+                    await AppClient.deleteOne({ type: 'operator' }, (e, client) => {
+                        if (e) {
+                            failReq = true
+                            res.status(500).send()
+                        }
+                    })
+                }
             }
         })
         if (failReq) return
