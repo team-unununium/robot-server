@@ -1,7 +1,7 @@
 // All socket functions (io is passed from app.js)
 
 /* Custom socket variables:
--  data_guid: GUID of the socket
+-  data_guid: GUID of the socket. The ID of the socket is not used as an identifier to allow the server to handle disconnects and reconnects
 -  data_type: The type of socket (client or robot)
 -  data_rtc: The RTC info of the socket
 */
@@ -15,53 +15,92 @@ const dataCheck = function(data) {
     return data
 }
 
-const auth = function(io) {
+const auth = (socket, next) => {
+    console.log('DEBUG: Auth event attempted')
 	// https://stackoverflow.com/a/36821359
-	return (socket, next) => {
-		if (socket.handshake.query && socket.handshake.query.token && socket.handshake.query.guid) {
-			const guid = socket.handshake.query.guid
-			const token = socket.handshake.query.token
-			AppClient.findOne({guid, token}, (e, client) => {
-				if (!e && client) {
-                    socket.data_guid = guid
-                    socket.data_type = client.type
-                    next()
-				} else {
-                    next(new Error('Authentication error'))
-                }
-			})
-		} else {
-			next(new Error('Parameter error'))
-		}
-	}
+    var guid
+    var token
+    console.log(socket.handshake.query)
+    if (socket.handshake.query && socket.handshake.query.token && socket.handshake.query.guid) {
+        guid = socket.handshake.query.guid
+        token = socket.handshake.query.token
+    } else if (socket.handshake.headers && socket.handshake.headers.token && socket.handshake.headers.guid) {
+        guid = socket.handshake.headers.guid
+        token = socket.handshake.headers.token
+    }
+	if (guid != null && token != null) {
+        AppClient.findOne({guid, token}, (e, client) => {
+            if (!e && client) {
+                socket.data_guid = guid
+                socket.data_type = client.type
+                next()
+            } else {
+                next(new Error('Authentication error'))
+            }
+        })
+    } else {
+        next(new Error('Parameter error'))
+    }
+}
+
+const onSocketJoin = (io, socket) => {
+    AppClient.findOne({guid: socket.data_guid}, (e, client) => {
+        if (!e && client) {
+            console.log('Client with GUID', socket.data_guid, 'and type', socket.data_type, 'connected')
+            client['online'] = true
+            client.save((e) => {if (e) console.log('Error changing online status of socket with GUID ', socket.data_guid, '\nError is', e)})
+        } else {
+            console.log('Client with invalid GUID', socket.data_guid,'successfully connected, disconnecting')
+            client.disconnect()
+        }
+    })
+
+    socket.join(socket.data_type)
+    if (socket.data_type === 'robot') {
+        socket.emit ('testRobot')
+        socket.broadcast.emit('rtcRobotConnected', { guid: socket.data_guid })
+    } else {
+        socket.broadcast.emit('rtcClientConnected', { guid: socket.data_guid })
+        if (socket.data_type === 'operator') socket.emit('testOperator')
+        else socket.emit('testClient')
+    }
+}
+
+// The function that handles the basic RTC calls for the server
+const handleRTCCalls = (name, socket, data) => {
+    if (!data) {
+        socket.emit('rtcError', name + ' did not receive any data')
+        return
+    }
+
+    data = datacheck(data)
+    if (data.target && data.content) {
+        var targetSocketFound = false
+        data.content.source = socket.data_guid
+        io.of('/').fetchSockets().forEach((targetSocket) => {
+            if (targetSocket.data_guid === data.target) socket.to(targetSocket.id + '').emit(name, data.content)
+            targetSocketFound = true
+            return
+        })
+        if (!targetSocketFound) socket.emit('rtcError', name + ' could not find socket with GUID ' + data.target)
+    } else {
+        socket.emit('rtcError', name + ' has missing parameters')
+    }
 }
 
 const connection = function(io) {
     // All functions starting with robot would only be sent to/from robots, vice versa for clients
     return (socket) => {
-        // socket.on('join') is handled by auth.postAuthenticate
-        // The if statements is to prevent malicious connection to the socket pretending to be someone else's role
+        onSocketJoin(io, socket)
 
-        // Adds the user to the database
-        socket.on('join', (data, callback) => {
-            AppClient.findOne({guid: socket.data_guid}, (e, client) => {
-				if (!e && client) {
-                    console.log('Client with GUID', socket.data_guid, 'and type', socket.data_type, 'connected')
-                    client['online'] = true
-                    client.save((e) => {if (e) console.log('Error changing online status of socket with GUID ', socket.data_guid, '\nError is', e)})
-				} else {
-                    console.log('Client with invalid GUID', socket.data_guid,'successfully connected')
-                    client.disconnect()
-                }
-			})
-        })
-
-        // Deletes the user from the database when the user is deleted
+        // Sets the user to be offline when it gets disconnected
         socket.on('disconnect', (data, callback) => {
             AppClient.findOne({ guid: socket.data_guid }, (e, client) => {
                 if (e) {
                     console.log('Error while deleting socket with GUID', socket.data_guid)
                 } else if (client) {
+                    if (client.type === 'robot') socket.broadcast.emit('rtcRobotDisconnected', { guid: socket.data_guid })
+                    else socket.broadcast.emit('rtcClientDisconnected', { guid: socket.data_guid })
                     client['online'] = false
                     client.save((e) => {if (e) console.log('Error changing online status of socket with GUID ', socket.data_guid, '\nError is', e)})
                 } else {
@@ -73,45 +112,51 @@ const connection = function(io) {
         // All operator side function receivers
         socket.on('operatorRotateCamera', (data, callback) => {
             data = dataCheck(data)
-            if (socket.data_type === 'operator') {
-                io.emit('robotRotateCamera', data)
+            if(socket.data_type === 'operator') {
+                io.of('/').to('robot').emit('robotRotateCamera', data)
             }
         })
 
         socket.on('operatorRotate', (data, callback) => {
             data = dataCheck(data)
             if (socket.data_type === 'operator') {
-                io.emit('robotRotate', data)
+                io.of('/').to('robot').emit('robotRotate', data)
             }
         })
 
         socket.on('operatorStartMoving', (data, callback) => {
             data = dataCheck(data)
             if (socket.data_type === 'operator') {
-                io.emit('robotStartMoving')
+                io.of('/').to('robot').emit('robotStartMoving')
             }
         })
 
         socket.on('operatorStopMoving', (data, callback) => {
             data = dataCheck(data)
             if (socket.data_type === 'operator') {
-                io.emit('robotStopMoving')
+                io.of('/').to('robot').emit('robotStopMoving')
             }
         })
 
         socket.on('operatorChangeSpeed', (data, callback) => {
             data = dataCheck(data)
             if (socket.data_type === 'operator') {
-                io.emit('robotChangeSpeed', data)
+                io.of('/').to('robot').emit('robotChangeSpeed', data)
             }
         })
         
+        // All robot side function receivers
         socket.on('robotUpdateData', (data, callback) => {
             data = dataCheck(data)
-            if (socket.data_type === 'robot') {
-                io.emit('clientUpdateData', data)
+            if (socket.data_type === 'operator') {
+                io.of('/').to('operator').to('client').emit('clientUpdateData', data)
             }
         })
+
+        // All RTC function receivers
+        socket.on('rtcOffer', (data, callback) => handleRTCCalls('rtcOffer', socket, data))
+        socket.on('rtcAnswer', (data, callback) => handleRTCCalls('rtcAnswer', socket, data))
+        socket.on('rtcCandidate', (data, callback) => handleRTCCalls('rtcCandidate', socket, data))
     }
 }
 
