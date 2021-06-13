@@ -32,7 +32,7 @@ router.post('/access', async (req, res) => {
     } else if (req.body.secret === process.env.SERVER_ROBOT_SECRET) {
         // Check if robot exists in database
         var failReq = false
-        await AppClient.findOne({ type: 'robot' }, (e, client) => {
+        await AppClient.findOne({ type: 'robot' }, async (e, client) => {
             if (debugMode) return // Skips check for debug mode
             if (e) {
                 failReq = true
@@ -56,7 +56,7 @@ router.post('/access', async (req, res) => {
     } else if (req.body.secret === process.env.SERVER_OPERATOR_SECRET) {
         // Check if operator exists in database
         var failReq = false
-        await AppClient.findOne({ type: 'operator' }, (e, client) => {
+        await AppClient.findOne({ type: 'operator' }, async (e, client) => {
             if (e) {
                 failReq = true
                 res.status(500).send()

@@ -19,7 +19,6 @@ app.use(express.static('public'))
 const server = http.createServer(app)
 
 // Set up sockets
-const io = socketio(server)
 app.use(router)
 const io = require('socket.io')(server, {
     path: '/socket.io/',
