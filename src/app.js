@@ -19,9 +19,13 @@ app.use(express.json())
 const server = http.createServer(app)
 
 // Set up sockets
-const io = socketio(server).of('/client')
+const io = socketio(server)
+app.use(router)
+io.use(socketfunc.auth(io), {
+    path: '/client/',
+    serveClient: true
+})
 io.on('connection', socketfunc.connection(io))
-app.use(router) // Router comes after io
 
 // Start server
 const port = process.env.PORT
