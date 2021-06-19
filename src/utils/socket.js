@@ -16,11 +16,10 @@ const dataCheck = function(data) {
 }
 
 const auth = (socket, next) => {
-    console.log('DEBUG: Auth event attempted')
 	// https://stackoverflow.com/a/36821359
     var guid
     var token
-    console.log(socket.handshake.query)
+    console.log('DEBUG: Headers: ' + socket.handshake.headers)
     if (socket.handshake.query && socket.handshake.query.token && socket.handshake.query.guid) {
         guid = socket.handshake.query.guid
         token = socket.handshake.query.token
@@ -51,16 +50,14 @@ const onSocketJoin = (io, socket) => {
             client.save((e) => {if (e) console.log('Error changing online status of socket with GUID ', socket.data_guid, '\nError is', e)})
         } else {
             console.log('Client with invalid GUID', socket.data_guid,'successfully connected, disconnecting')
-            client.disconnect()
+            socket.disconnect()
         }
     })
 
     socket.join(socket.data_type)
     if (socket.data_type === 'robot') {
         socket.emit ('testRobot')
-        socket.broadcast.emit('rtcRobotConnected', { guid: socket.data_guid })
     } else {
-        socket.broadcast.emit('rtcClientConnected', { guid: socket.data_guid })
         if (socket.data_type === 'operator') socket.emit('testOperator')
         else socket.emit('testClient')
     }

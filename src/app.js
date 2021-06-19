@@ -24,6 +24,7 @@ const io = require('socket.io')(server, {
     path: '/socket.io/',
     serveClient: true
 })
+io.use(socketfunc.auth)
 io.on('connection', socketfunc.connection(io))
 
 // Start server
