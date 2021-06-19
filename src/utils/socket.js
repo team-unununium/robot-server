@@ -66,28 +66,6 @@ const onSocketJoin = (io, socket) => {
     }
 }
 
-// The function that handles the basic RTC calls for the server
-const handleRTCCalls = (name, socket, data) => {
-    if (!data) {
-        socket.emit('rtcError', name + ' did not receive any data')
-        return
-    }
-
-    data = datacheck(data)
-    if (data.target && data.content) {
-        var targetSocketFound = false
-        data.content.source = socket.data_guid
-        io.of('/').fetchSockets().forEach((targetSocket) => {
-            if (targetSocket.data_guid === data.target) socket.to(targetSocket.id + '').emit(name, data.content)
-            targetSocketFound = true
-            return
-        })
-        if (!targetSocketFound) socket.emit('rtcError', name + ' could not find socket with GUID ' + data.target)
-    } else {
-        socket.emit('rtcError', name + ' has missing parameters')
-    }
-}
-
 const connection = function(io) {
     // All functions starting with robot would only be sent to/from robots, vice versa for clients
     return (socket) => {
@@ -148,15 +126,16 @@ const connection = function(io) {
         // All robot side function receivers
         socket.on('robotUpdateData', (data, callback) => {
             data = dataCheck(data)
-            if (socket.data_type === 'operator') {
+            if (socket.data_type === 'robot') {
                 io.of('/').to('operator').to('client').emit('clientUpdateData', data)
             }
         })
 
-        // All RTC function receivers
-        socket.on('rtcOffer', (data, callback) => handleRTCCalls('rtcOffer', socket, data))
-        socket.on('rtcAnswer', (data, callback) => handleRTCCalls('rtcAnswer', socket, data))
-        socket.on('rtcCandidate', (data, callback) => handleRTCCalls('rtcCandidate', socket, data))
+        socket.on('robotSendVideo', (data, callback) => {
+            if (socket.data_type === 'robot') {
+                io.of('/').to('operator').to('client').emit('clientSendVideo', data)
+            }
+        })
     }
 }
 
