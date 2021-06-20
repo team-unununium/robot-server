@@ -131,6 +131,7 @@ router.delete('/access', async (req, res) => {
 })
 
 router.get('/playlist.m3u8', async (req, res) => {
+    res.setHeader('Content-type', 'text/plain')
     res.send(stream.m3u8String)
 })
 

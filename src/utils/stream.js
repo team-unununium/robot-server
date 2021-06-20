@@ -20,7 +20,7 @@ var stream = {
         if (req.method === 'GET') {
             for (var i = 0; i < bufferCount; i++) {
                 if (req.originalUrl === '/video' + (stream.mediaSequence - bufferCount + i + 1) + '.h264') {
-                    return res.send(stream.previousVideos[i])
+                    return res.send(Buffer.from(stream.previousVideos[i]))
                 }
             }
             next()

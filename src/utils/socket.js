@@ -25,11 +25,11 @@ const auth = (socket, next) => {
     if (socket.handshake.query && socket.handshake.query.token && socket.handshake.query.guid) {
         guid = socket.handshake.query.guid
         token = socket.handshake.query.token
-        bufferDuration = socket.handshake.query.bufferDuration
+        if (socket.handshake.query.bufferDuration) bufferDuration = parseFloat(socket.handshake.query.bufferDuration)
     } else if (socket.handshake.headers && socket.handshake.headers.token && socket.handshake.headers.guid) {
         guid = socket.handshake.headers.guid
         token = socket.handshake.headers.token
-        bufferDuration = socket.handshake.headers.bufferDuration
+        if (socket.handshake.headers.bufferDuration) bufferDuration = parseFloat(socket.handshake.headers.bufferDuration)
     }
     console.log('Client with ' + guid + ' and token ' + token + ' and buffer duration ' + bufferDuration + ' attempting connection')
 	if (guid != null && token != null) {
