@@ -6,7 +6,7 @@
 -  data_rtc: The RTC info of the socket
 */
 const AppClient = require('../models/AppClient')
-const stream = require('stream')
+const stream = require('./stream')
 
 const dataCheck = function(data) {
     // Check if data is String, if yes, then parse data
