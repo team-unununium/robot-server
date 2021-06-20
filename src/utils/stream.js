@@ -11,13 +11,13 @@ var stream = {
         stream.mediaSequence += 1
         stream.m3u8String = m3u8Template + '#EXT-X-MEDIA-SEQUENCE:' + stream.mediaSequence + '\n'
         for (var i = 0; i < bufferCount; i++) {
-            stream.m3u8String += '#EXTINF:' + stream.bufferDuration + '\n' + 'video' + (stream.mediaSequence - bufferCount + i + 1) + '.h264\n'
+            stream.m3u8String += '#EXTINF:' + stream.bufferDuration + '\n' + 'video' + (stream.mediaSequence + i) + '.h264\n'
         }
     },
     routerMiddleware: (req, res, next) => {
         if (req.method === 'GET') {
             for (var i = 0; i < bufferCount; i++) {
-                if (req.originalUrl === '/video' + (stream.mediaSequence - bufferCount + i + 1) + '.h264') {
+                if (req.originalUrl === '/video' + (stream.mediaSequence + i) + '.h264') {
                     return res.send(Buffer.from(stream.previousVideos[i]))
                 }
             }
