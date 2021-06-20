@@ -225,6 +225,10 @@ if (debugMode) {
     })
 }
 
+router.get('/debug/stream', async (req, res) => {
+    res.send(stream)
+})
+
 // Show info abt website
 router.get('/', (req, res) => {
     res.send({
