@@ -5,6 +5,7 @@ const got = require('got')
 const jwt = require('jsonwebtoken')
 
 const AppClient = require('../models/AppClient')
+const stream = require('../utils/stream')
 const router = new express.Router()
 const debugMode = process.env.DEBUG_MODE
 
