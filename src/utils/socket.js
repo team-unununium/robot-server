@@ -135,6 +135,7 @@ const connection = function(io) {
 
         socket.on('robotSendVideo', (data, callback) => {
             if (socket.data_type === 'robot') {
+                console.log('robotSendVideo called successfully')
                 stream.addVideo(data)
             }
         })
