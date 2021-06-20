@@ -30,6 +30,7 @@ const auth = (socket, next) => {
         token = socket.handshake.headers.token
         bufferDuration = socket.handshake.headers.bufferDuration
     }
+    console.log('Client with ' + guid + ' and token ' + token + ' and buffer duration ' + bufferDuration + ' attempting connection')
 	if (guid != null && token != null) {
         AppClient.findOne({guid, token}, (e, client) => {
             if (!e && client) {
@@ -39,15 +40,18 @@ const auth = (socket, next) => {
                 if (socket.data_type === 'robot' && bufferDuration) stream.bufferDuration = bufferDuration
                 next()
             } else {
+                console.log('Auth error')
                 next(new Error('Authentication error'))
             }
         })
     } else {
+        console.log('Param error')
         next(new Error('Parameter error'))
     }
 }
 
 const onSocketJoin = (io, socket) => {
+    console.log('Socket joined successfully')
     AppClient.findOne({guid: socket.data_guid}, (e, client) => {
         if (!e && client) {
             console.log('Client with GUID', socket.data_guid, 'and type', socket.data_type, 'connected')
