@@ -5,11 +5,8 @@ const got = require('got')
 const jwt = require('jsonwebtoken')
 
 const AppClient = require('../models/AppClient')
-const stream = require('../utils/stream')
 const router = new express.Router()
 const debugMode = process.env.DEBUG_MODE
-
-router.use(stream.routerMiddleware)
 
 // No robots
 router.get('/robots.txt', (req, res) => {
@@ -130,11 +127,6 @@ router.delete('/access', async (req, res) => {
     })
 })
 
-router.get('/playlist.m3u8', async (req, res) => {
-    res.setHeader('Content-type', 'text/plain')
-    res.send(stream.m3u8String)
-})
-
 // Global variables used
 var dlVersion, dlLink, dlPage, dlLast
 const setDlLink = async function () {
@@ -208,8 +200,7 @@ router.get('/debug', (req, res) => {
     const proto = req.secure ? 'https' : 'http'
     if (debugMode) {
         res.send({
-            db: proto + '://' + req.hostname + '/debug/db',
-            stream: proto + '://' + req.hostname + '/debug/stream'
+            db: proto + '://' + req.hostname + '/debug/db'
         })
     } else {
         res.send('Debug mode disabled')
@@ -226,9 +217,6 @@ if (true) {
                 res.send(clients)
             }
         })
-    })
-    router.get('/debug/stream', async (req, res) => {
-        res.send(stream)
     })
 }
 

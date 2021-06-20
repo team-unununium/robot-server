@@ -21,21 +21,31 @@ const auth = (socket, next) => {
     var guid
     var token
     var bufferDuration
+    var videoWidth
+    var videoHeight
     if (socket.handshake.query && socket.handshake.query.token && socket.handshake.query.guid) {
         guid = socket.handshake.query.guid
         token = socket.handshake.query.token
         if (socket.handshake.query.bufferDuration) bufferDuration = parseFloat(socket.handshake.query.bufferDuration)
+        if (socket.handshake.query.videoWidth) videoWidth = parseInt(socket.handshake.query.videoWidth)
+        if (socket.handshake.query.videoHeight) videoHeight = parseInt(socket.handshake.query.videoHeight)
     } else if (socket.handshake.headers && socket.handshake.headers.token && socket.handshake.headers.guid) {
         guid = socket.handshake.headers.guid
         token = socket.handshake.headers.token
         if (socket.handshake.headers.bufferDuration) bufferDuration = parseFloat(socket.handshake.headers.bufferDuration)
+        if (socket.handshake.headers.videoWidth) videoWidth = parseInt(socket.handshake.headers.videoWidth)
+        if (socket.handshake.headers.videoHeight) videoHeight = parseInt(socket.handshake.headers.videoHeight)
     }
 	if (guid != null && token != null) {
         AppClient.findOne({guid, token}, (e, client) => {
             if (!e && client) {
                 socket.data_guid = guid
                 socket.data_type = client.type
-                if (socket.data_type === 'robot' && bufferDuration) stream.bufferDuration = bufferDuration
+                if (socket.data_type === 'robot') {
+                    if (bufferDuration) stream.bufferDuration = bufferDuration
+                    if (videoWidth) stream.videoWidth = videoWidth
+                    if (videoHeight) stream.videoHeight = videoHeight
+                }
                 next()
             } else {
                 next(new Error('Authentication error'))
@@ -61,11 +71,11 @@ const onSocketJoin = (io, socket) => {
     socket.join(socket.data_type)
     if (socket.data_type === 'robot') {
         socket.emit ('testRobot')
+        io.of('/').to('operator').to('client').emit('clientRequestInfo', stream)
     } else {
         if (socket.data_type === 'operator') socket.emit('testOperator')
         else socket.emit('testClient')
     }
-    stream.reset()
 }
 
 const connection = function(io) {
@@ -87,6 +97,11 @@ const connection = function(io) {
                     console.log('Client with GUID', socket.data_guid, 'not found')
                 }
             })
+        })
+
+        // All client side function receivers
+        socket.on('clientRequestInfo', (data, callback) => {
+            socket.emit('clientRequestInfo', stream)
         })
 
         // All operator side function receivers
@@ -135,7 +150,7 @@ const connection = function(io) {
 
         socket.on('robotSendVideo', (data, callback) => {
             if (socket.data_type === 'robot') {
-                stream.addVideo(data)
+                io.of('/').to('operator').to('client').emit('clientSendVideo', data)
             }
         })
     }
