@@ -18,7 +18,6 @@ const dataCheck = function(data) {
 
 const auth = (socket, next) => {
 	// https://stackoverflow.com/a/36821359
-    console.log('Auth event attempted (before guid, token & bufferDuration)')
     var guid
     var token
     var bufferDuration
@@ -31,28 +30,23 @@ const auth = (socket, next) => {
         token = socket.handshake.headers.token
         if (socket.handshake.headers.bufferDuration) bufferDuration = parseFloat(socket.handshake.headers.bufferDuration)
     }
-    console.log('Client with ' + guid + ' and token ' + token + ' and buffer duration ' + bufferDuration + ' attempting connection')
 	if (guid != null && token != null) {
         AppClient.findOne({guid, token}, (e, client) => {
             if (!e && client) {
-                console.log('Auth type ' + client.type + 'accepted')
                 socket.data_guid = guid
                 socket.data_type = client.type
                 if (socket.data_type === 'robot' && bufferDuration) stream.bufferDuration = bufferDuration
                 next()
             } else {
-                console.log('Auth error')
                 next(new Error('Authentication error'))
             }
         })
     } else {
-        console.log('Param error')
         next(new Error('Parameter error'))
     }
 }
 
 const onSocketJoin = (io, socket) => {
-    console.log('Socket joined successfully')
     AppClient.findOne({guid: socket.data_guid}, (e, client) => {
         if (!e && client) {
             console.log('Client with GUID', socket.data_guid, 'and type', socket.data_type, 'connected')
@@ -140,9 +134,7 @@ const connection = function(io) {
         })
 
         socket.on('robotSendVideo', (data, callback) => {
-            console.log('Data type: ' + socket.data_type)
             if (socket.data_type === 'robot') {
-                console.log('robotSendVideo called successfully')
                 stream.addVideo(data)
             }
         })
