@@ -9,7 +9,6 @@ const http = require('http')
 // User defined modules
 const router = require('./utils/router')
 const socketfunc = require('./utils/socket')
-const stream = require('./utils/stream')
 
 // Initialize Express server
 const app = express()
@@ -20,7 +19,6 @@ app.use(express.static('public'))
 const server = http.createServer(app)
 
 // Set up sockets
-app.use(stream.routerMiddleware)
 app.use(router)
 const io = require('socket.io')(server, {
     path: '/socket.io/',

@@ -18,6 +18,7 @@ const dataCheck = function(data) {
 
 const auth = (socket, next) => {
 	// https://stackoverflow.com/a/36821359
+    console.log('Auth event attempted (before guid, token & bufferDuration)')
     var guid
     var token
     var bufferDuration

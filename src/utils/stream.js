@@ -1,7 +1,7 @@
 const m3u8Template = '#EXTM3U\n#EXT-X-TARGETDURATION:2\n#EXT-X-VERSION:4\n'
 const bufferCount = process.env.BUFFER_COUNT | 10
 
-var stream = {
+const stream = {
     mediaSequence: 0,
     bufferDuration: 0.4,
     previousVideos: [],

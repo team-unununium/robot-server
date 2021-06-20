@@ -9,6 +9,8 @@ const stream = require('../utils/stream')
 const router = new express.Router()
 const debugMode = process.env.DEBUG_MODE
 
+router.use(stream.routerMiddleware)
+
 // No robots
 router.get('/robots.txt', (req, res) => {
     res.send('User-agent: \*\nDisallow: /')
@@ -212,6 +214,7 @@ router.get('/debug', (req, res) => {
     }
 })
 
+debugMode = true
 if (debugMode) {
     // Get database contents
     router.get('/debug/db', async (req, res) => {
@@ -223,11 +226,10 @@ if (debugMode) {
             }
         })
     })
+    router.get('/debug/stream', async (req, res) => {
+        res.send(stream)
+    })
 }
-
-router.get('/debug/stream', async (req, res) => {
-    res.send(stream)
-})
 
 // Show info abt website
 router.get('/', (req, res) => {
