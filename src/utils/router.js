@@ -127,6 +127,10 @@ router.delete('/access', async (req, res) => {
     })
 })
 
+router.get('/playlist.m3u8', async (req, res) => {
+    res.send(stream.m3u8String)
+})
+
 // Global variables used
 var dlVersion, dlLink, dlPage, dlLast
 const setDlLink = async function () {

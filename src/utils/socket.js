@@ -6,6 +6,7 @@
 -  data_rtc: The RTC info of the socket
 */
 const AppClient = require('../models/AppClient')
+const stream = require('stream')
 
 const dataCheck = function(data) {
     // Check if data is String, if yes, then parse data
@@ -19,19 +20,22 @@ const auth = (socket, next) => {
 	// https://stackoverflow.com/a/36821359
     var guid
     var token
-    console.log('DEBUG: Headers: ' + socket.handshake.headers)
+    var bufferDuration
     if (socket.handshake.query && socket.handshake.query.token && socket.handshake.query.guid) {
         guid = socket.handshake.query.guid
         token = socket.handshake.query.token
+        bufferDuration = socket.handshake.query.bufferDuration
     } else if (socket.handshake.headers && socket.handshake.headers.token && socket.handshake.headers.guid) {
         guid = socket.handshake.headers.guid
         token = socket.handshake.headers.token
+        bufferDuration = socket.handshake.headers.bufferDuration
     }
 	if (guid != null && token != null) {
         AppClient.findOne({guid, token}, (e, client) => {
             if (!e && client) {
                 socket.data_guid = guid
                 socket.data_type = client.type
+                if (socket.data_type === 'robot' && bufferDuration) stream.bufferDuration = bufferDuration
                 next()
             } else {
                 next(new Error('Authentication error'))
@@ -61,6 +65,7 @@ const onSocketJoin = (io, socket) => {
         if (socket.data_type === 'operator') socket.emit('testOperator')
         else socket.emit('testClient')
     }
+    stream.reset()
 }
 
 const connection = function(io) {
@@ -130,7 +135,7 @@ const connection = function(io) {
 
         socket.on('robotSendVideo', (data, callback) => {
             if (socket.data_type === 'robot') {
-                io.of('/').to('operator').to('client').emit('clientSendVideo', data)
+                stream.addVideo(data)
             }
         })
     }
