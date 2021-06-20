@@ -207,15 +207,15 @@ router.get('/debug', (req, res) => {
     const proto = req.secure ? 'https' : 'http'
     if (debugMode) {
         res.send({
-            db: proto + '://' + req.hostname + '/debug/db'
+            db: proto + '://' + req.hostname + '/debug/db',
+            stream: proto + '://' + req.hostname + '/debug/stream'
         })
     } else {
         res.send('Debug mode disabled')
     }
 })
 
-debugMode = true
-if (debugMode) {
+if (true) {
     // Get database contents
     router.get('/debug/db', async (req, res) => {
         await AppClient.find({}, (e, clients) => {
