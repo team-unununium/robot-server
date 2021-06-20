@@ -33,6 +33,7 @@ const auth = (socket, next) => {
 	if (guid != null && token != null) {
         AppClient.findOne({guid, token}, (e, client) => {
             if (!e && client) {
+                console.log('Auth type ' + client.type + 'accepted')
                 socket.data_guid = guid
                 socket.data_type = client.type
                 if (socket.data_type === 'robot' && bufferDuration) stream.bufferDuration = bufferDuration
@@ -134,6 +135,7 @@ const connection = function(io) {
         })
 
         socket.on('robotSendVideo', (data, callback) => {
+            console.log('Data type: ' + socket.data_type)
             if (socket.data_type === 'robot') {
                 console.log('robotSendVideo called successfully')
                 stream.addVideo(data)
