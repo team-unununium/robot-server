@@ -21,15 +21,17 @@ router.get('/robots.txt', (req, res) => {
 -  403: A client (that is online) with the same GUID already exists
 -  500: Error occured while querying database */
 router.post('/access', async (req, res) => {
-    if (!req.body || !req.body.guid || !req.body.secret) {
+    if (!(req.body && req.body.guid && req.body.secret) && !(req.get("guid") && req.get("secret"))) {
         return res.status(400).send()
     }
+    guid = req.body.guid || req.get("guid")
+    secret = req.body.secret || req.get("secret")
 
     // Check secret validity
     var type
-    if (req.body.secret === process.env.SERVER_CLIENT_SECRET) {
+    if (secret === process.env.SERVER_CLIENT_SECRET) {
         type = 'client'
-    } else if (req.body.secret === process.env.SERVER_ROBOT_SECRET) {
+    } else if (secret === process.env.SERVER_ROBOT_SECRET) {
         // Check if robot exists in database
         var failReq = false
         await AppClient.findOne({ type: 'robot' }, async (e, client) => {
@@ -53,7 +55,7 @@ router.post('/access', async (req, res) => {
         })
         if (failReq) return
         type = 'robot'
-    } else if (req.body.secret === process.env.SERVER_OPERATOR_SECRET) {
+    } else if (secret === process.env.SERVER_OPERATOR_SECRET) {
         // Check if operator exists in database
         var failReq = false
         await AppClient.findOne({ type: 'operator' }, async (e, client) => {
@@ -82,7 +84,7 @@ router.post('/access', async (req, res) => {
     }
 
     // Save client
-    AppClient.findOne({ guid: req.body.guid }, async (e, client) => {
+    AppClient.findOne({ guid }, async (e, client) => {
         if (e) {
             return res.status(500).send()
         } else if (client) {
@@ -91,14 +93,14 @@ router.post('/access', async (req, res) => {
                 return res.status(403).send()
             } else {
                 // GUID remains the same
-                client['token'] = jwt.sign({ _id: req.body.guid, date: '' + new Date() }, process.env.JWT_SECRET)
+                client['token'] = jwt.sign({ _id: guid, date: '' + new Date() }, process.env.JWT_SECRET)
                 client['type'] = type
                 client['online'] = false
                 await client.save()
                 return res.status(201).send(client)
             }
         } else {
-            const newClient = new AppClient({ guid: req.body.guid, token: jwt.sign({ _id: req.body.guid, date: '' + new Date() }, process.env.JWT_SECRET), type, online:false})
+            const newClient = new AppClient({ guid, token: jwt.sign({ _id: guid, date: '' + new Date() }, process.env.JWT_SECRET), type, online:false})
             await newClient.save()
             return res.status(201).send(newClient)
         }
@@ -112,11 +114,11 @@ router.post('/access', async (req, res) => {
 - 500: Error occured while querying database / deleting user
 */
 router.delete('/access', async (req, res) => {
-    if (!req.body || !req.body.guid || !req.body.token) {
+    if (!(req.body && req.body.guid && req.body.token) && !(req.get("guid") && req.get("token"))) {
         return res.status(400).send()
     }
 
-    await AppClient.deleteOne({ guid: req.body.guid, token: req.body.token }, (e, client) => {
+    await AppClient.deleteOne({ guid: (req.body.guid || req.get("guid")), token: (req.body.token || req.get("token")) }, (e, client) => {
         if (e) {
             return res.status(500).send()
         } else if (client) {
