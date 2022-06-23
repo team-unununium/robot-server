@@ -26,7 +26,7 @@
     "escape-html": "*",
     "express": "*",
     "express-basic-auth": "*",
-    "got": "^11.8.2",
+    "got": "^11.8.5",
     "jsonwebtoken": "*",
     "mongodb": "*",
     "mongoose": "*",
