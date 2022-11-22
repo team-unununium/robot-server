@@ -30,6 +30,6 @@
     "jsonwebtoken": "*",
     "mongodb": "*",
     "mongoose": "*",
-    "socket.io": "^4.0.1"
+    "socket.io": "^4.5.3"
   }
 }
